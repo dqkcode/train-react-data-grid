@@ -1,6 +1,6 @@
-import rows  from './GridRow';
+import dataTable  from './GridRow';
 import { combineReducers } from 'redux';
 
 export default combineReducers({
-    rows
+    dataTable
 })

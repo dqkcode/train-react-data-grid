@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
-import { Layout, Breadcrumb, Icon, Upload, Button, Card } from 'antd';
+import { Layout, Breadcrumb, Icon, Upload, Button, Card, Input } from 'antd';
 
 import ReactDataGrid from 'react-data-grid';
 import { connect } from 'react-redux'
 import * as actions from '../actions'
 import { SideBar } from './SideBar';
-import XLSX from 'xlsx';
 const {
   Header,
   Content,
@@ -18,24 +17,23 @@ const {
 
 
 
-const columns = [
-  { key: 'id', name: 'ID', resizable: true, width: 80 },
-  { key: 'title', name: 'Title', editable: true, resizable: true },
-  { key: 'count', name: 'Count', editable: true, resizable: true }
-];
-
 class MyLayout extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    // this.state = {
 
-      rows: [
+    //   fileName: '',
+    //   rows: [
 
-      ]
-    };
+    //   ]
+    // };
   }
 
-
+// UNSAFE_componentWillReceiveProps()
+static getDerivedStateFromProps(props,state){
+console.log('props :', props);
+console.log('state :', state);
+}
 
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
@@ -46,14 +44,12 @@ class MyLayout extends Component {
 
 
   propsBtnUpLoad = {
-    action: './',
+    // action: '',
     // action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-    onChange({ file, fileList }) {
+    onChange({ file, fileList, event }) {
       if (file.status !== 'uploading') {
-        console.log(file, fileList);
-        // var first_worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        // var data = XLSX.utils.sheet_to_json(first_worksheet, { header: 1 });
-        // console.log('data :', data);
+        console.log(file)
+
       }
     },
     defaultFileList: [
@@ -67,6 +63,18 @@ class MyLayout extends Component {
       }
     ]
   };
+
+  onImportFile = (e) => {
+    this.props.ImportFile(e)
+  }
+
+
+  inputFile = () => (
+    <input type="file" onChange={this.onImportFile}></input>
+  )
+
+
+
   btnUpLoad = (propsBtnUpLoad) => (
     <Upload {...propsBtnUpLoad}>
       <Button>
@@ -76,8 +84,8 @@ class MyLayout extends Component {
   )
   showReactDataGrid = () => (
     <ReactDataGrid
-      columns={columns}
-      rowGetter={i => this.props.rows[i]}
+      columns={this.props.dataTable.cols}
+      rowGetter={i => this.props.dataTable.rows[i]}
       rowsCount={3}
       onGridRowsUpdated={this.onGridRowsUpdated}
       enableCellSelect={true}
@@ -87,8 +95,21 @@ class MyLayout extends Component {
     />
   )
   render() {
+    // console.log('this.props.rows[0] :', this.props.rows[0]);
+    // console.log('this.props.rows[1] :', this.props.rows[1]);
+    let rowsdata = new Array(this.props.dataTable)
 
+    console.log('rowsdata  :', rowsdata);
+    console.log('rowsdata.rows  :', rowsdata.rows);
 
+    // console.log('typeod(rowdata)', typeof(rowdata))
+    // for (const key in rowdata) {
+    //   if (rowdata.hasOwnProperty(key)) {
+    //     const element = rowdata[key];
+    //     console.log('key :', key);
+
+    //   }
+    // }
     return (
 
       <Layout style={{ minHeight: '100vh' }}>
@@ -107,12 +128,13 @@ class MyLayout extends Component {
             <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
               {/* data-grid-layout */}
               <Card style={{ margin: '5px 0' }}>
+                {this.inputFile()}
                 {this.btnUpLoad(this.propsBtnUpLoad)}
               </Card>
 
               <Card >
                 <div className="mystyle">
-                  {this.showReactDataGrid()}
+                  {/* {this.showReactDataGrid()} */}
                 </div>
               </Card>
 
@@ -126,11 +148,14 @@ class MyLayout extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  rows: state.rows
+  dataTable: state.dataTable
 })
 
 const mapDispatchToProps = dispatch => ({
-  GridRowsUpdated: (cellInfo) => dispatch(actions.GridRowsUpdated(cellInfo))
+  GridRowsUpdated: cellInfo => dispatch(actions.GridRowsUpdated(cellInfo)),
+  // ImportFile: event => dispatch(actions.ImportFile(event)),
+  ImportFile: event => dispatch(actions.loadFile(event.target.files)),
+  
 })
 
 
