@@ -23,6 +23,16 @@
   color: #61dafb;
 }
 
+/* .react-grid-Container{
+  width: 60%;
+} */
+.mystyle{
+  width:  100%;
+  overflow: hidden
+}
+.react-grid-Container {
+  width: 500px;
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
