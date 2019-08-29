@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { Layout, Breadcrumb, Icon, Upload, Button, Card, Input } from 'antd';
-
 import ReactDataGrid from 'react-data-grid';
 import { connect } from 'react-redux'
 import * as actions from '../actions'
 import { SideBar } from './SideBar';
+import { bindActionCreators } from 'redux'
 const {
   Header,
   Content,
@@ -29,11 +29,11 @@ class MyLayout extends Component {
     // };
   }
 
-// UNSAFE_componentWillReceiveProps()
-static getDerivedStateFromProps(props,state){
-console.log('props :', props);
-console.log('state :', state);
-}
+  // // UNSAFE_componentWillReceiveProps()
+  // static getDerivedStateFromProps(props,state){
+  // console.log('props :', props);
+  // console.log('state :', state);
+  // }
 
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
@@ -65,7 +65,9 @@ console.log('state :', state);
   };
 
   onImportFile = (e) => {
-    this.props.ImportFile(e)
+
+    this.props.getTableData(e.target.files[0])
+
   }
 
 
@@ -86,7 +88,7 @@ console.log('state :', state);
     <ReactDataGrid
       columns={this.props.dataTable.cols}
       rowGetter={i => this.props.dataTable.rows[i]}
-      rowsCount={3}
+      rowsCount={this.props.dataTable.rows.length}
       onGridRowsUpdated={this.onGridRowsUpdated}
       enableCellSelect={true}
     // minHeight={500}
@@ -97,10 +99,10 @@ console.log('state :', state);
   render() {
     // console.log('this.props.rows[0] :', this.props.rows[0]);
     // console.log('this.props.rows[1] :', this.props.rows[1]);
-    let rowsdata = new Array(this.props.dataTable)
+    let dataTable = this.props.dataTable
 
-    console.log('rowsdata  :', rowsdata);
-    console.log('rowsdata.rows  :', rowsdata.rows);
+    // console.log('dataTable  :', dataTable);
+    // console.log('dataTable.rows  :', dataTable.rows);
 
     // console.log('typeod(rowdata)', typeof(rowdata))
     // for (const key in rowdata) {
@@ -134,7 +136,7 @@ console.log('state :', state);
 
               <Card >
                 <div className="mystyle">
-                  {/* {this.showReactDataGrid()} */}
+                  {this.showReactDataGrid()}
                 </div>
               </Card>
 
@@ -153,9 +155,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = dispatch => ({
   GridRowsUpdated: cellInfo => dispatch(actions.GridRowsUpdated(cellInfo)),
-  // ImportFile: event => dispatch(actions.ImportFile(event)),
-  ImportFile: event => dispatch(actions.loadFile(event.target.files)),
-  
+  getTableData: event => dispatch(actions.getTableDataAction(event))
+  // getTableData: status => dispatch(actions.actionCreator(status))
+
 })
 
 

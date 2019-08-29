@@ -1,15 +1,43 @@
-
+import { put, take, takeEvery } from 'redux-saga/effects'
+import * as actions from './../actions';
 import * as constants from './../constants';
 import XLSX from 'xlsx';
-import { async, promised } from 'q';
 
-let initialState = {
-    cols: [],
-    rows: []
+export function* sagaGetDataFromFile(event) {
+    // yield take(constants.LOAD_FILE)
+    console.log('sagaGetDataFromFile event :', event )
+    if (event)
+        try {
+            console.log('getDataFromFile');
+            const data = yield getDataFromFile(event)
+            console.log('data', data)
+            yield put({ type: constants.IMPORT_FILE_SUCCESS, data })
+        } catch (error) {
+            throw error
+        }
+
 }
 
+  export function* watchSagaGetDataFromFile() {
+    yield takeEvery('LOAD_FILE', sagaGetDataFromFile)
+  }
 
-async function getDataFromFile(reader, file) {
+
+  function* updatePorts(status) {
+    console.log(status)
+  }
+  
+  export function* watchUpdatePorts() {
+    yield takeEvery('MY_ACTION', updatePorts)
+  }
+
+
+async function getDataFromFile(event) {
+
+    let file = event.file
+    console.log('file :', file);
+
+    let reader = new FileReader();
     return new Promise((resolve, reject) => {
         reader.onload = event => {
             let dataTable = {
@@ -56,53 +84,23 @@ async function getDataFromFile(reader, file) {
 
 
             }
-            // console.log('dataTable :', dataTable);
+            console.log('dataTable :', dataTable);
             // console.log('dataTable.rows :', dataTable.rows[0]);
             resolve(dataTable)
         }
         reader.readAsArrayBuffer(file);
     })
+
+
 }
 
-let handleUpLoadFile = async (reader, file) => {
-    try {
-        // return await getDataFromFile(reader, file)
-        const data = await getDataFromFile(reader, file)
-        console.log('data await: ', data)
-        initialState = data
-    } catch (e) {
-        console.log(e.message)
-    }
-}
-
-export default (state = initialState, action) => {
-
-    // console.log('action', action)
-    // let convert_action  = {...action}
-
-    // console.log('cell :', cell);
-    // if updated is count => parse it to number
-    // if(cell && cell.updated.count) { 
-    //     cell.updated.count = parseInt(cell.updated.count)
-    // } 
-
-    switch (action.type) {
-
-        case constants.GRID_ROW_UPDATED:
-            // const rows = state.rows.slice();
-            // console.log('state', state)
-            let cell = action.cellInfo
-            const rows = [...state.rows]
-            for (let i = cell.fromRow; i <= cell.toRow; i++) {
-                rows[i] = { ...rows[i], ...cell.updated }
-                console.log('rows[i] :', rows[i]);
-            }
-            return { ...state }
-
-        case constants.IMPORT_FILE_SUCCESS:
-            console.log('action.data :', action.data);
-            return action.data
-        default:
-            return state
-    }
-}
+// let handleUpLoadFile = async (file) => {
+//     try {
+//         // return await getDataFromFile(reader, file)
+//         const data = await getDataFromFile(file)
+//         console.log('data await: ', data)
+//         return data
+//     } catch (e) {
+//         console.log(e.message)
+//     }
+// }
