@@ -1,4 +1,4 @@
-import { fork, call, put, takeEvery, takeLatest, take } from 'redux-saga/effects'
+import {  call } from 'redux-saga/effects'
 import { watchSagaGetDataFromFile } from './sagaFile';
 
 function* rootSaga() {

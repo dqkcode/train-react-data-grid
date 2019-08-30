@@ -1,46 +1,29 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { Layout, Breadcrumb, Icon, Upload, Button, Card, Input } from 'antd';
 import ReactDataGrid from 'react-data-grid';
 import { connect } from 'react-redux'
 import * as actions from '../actions'
 import { SideBar } from './SideBar';
-import { bindActionCreators } from 'redux'
+import { Toolbar, Data, Filters, Editors, Formatters,ToolsPanel,Menu } from "react-data-grid-addons";
+import GridTable from './Table'
+const { DropDownEditor,SimpleTextEditor,ContainerEditorWrapper } = Editors;
+const { DropDownFormatter } = Formatters
+const {AdvancedToolbar} = ToolsPanel
+const {MenuItem} = Menu
 const {
   Header,
   Content,
-  // Button,
-  // Upload,
-  // // Footer, 
-  // Sider
 } = Layout;
-// const { SubMenu } = Menu;
-
+// const selectors = Data.Selectors;
 
 
 class MyLayout extends Component {
   constructor(props) {
     super(props);
-    // this.state = {
-
-    //   fileName: '',
-    //   rows: [
-
-    //   ]
-    // };
+    this.state = {
+      filters: {}
+    };
   }
-
-  // // UNSAFE_componentWillReceiveProps()
-  // static getDerivedStateFromProps(props,state){
-  // console.log('props :', props);
-  // console.log('state :', state);
-  // }
-
-  onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-
-    this.props.GridRowsUpdated({ fromRow, toRow, updated })
-  };
-
-
 
 
   propsBtnUpLoad = {
@@ -75,7 +58,10 @@ class MyLayout extends Component {
     <input type="file" onChange={this.onImportFile}></input>
   )
 
+ onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
+    this.props.GridRowsUpdated({ fromRow, toRow, updated })
+  };
 
   btnUpLoad = (propsBtnUpLoad) => (
     <Upload {...propsBtnUpLoad}>
@@ -84,34 +70,13 @@ class MyLayout extends Component {
       </Button>
     </Upload>
   )
-  showReactDataGrid = () => (
-    <ReactDataGrid
-      columns={this.props.dataTable.cols}
-      rowGetter={i => this.props.dataTable.rows[i]}
-      rowsCount={this.props.dataTable.rows.length}
-      onGridRowsUpdated={this.onGridRowsUpdated}
-      enableCellSelect={true}
-    // minHeight={500}
 
-    // maxWidth={900}
-    />
-  )
+  removeItemsSelected = ()=>{
+        
+  }
   render() {
-    // console.log('this.props.rows[0] :', this.props.rows[0]);
-    // console.log('this.props.rows[1] :', this.props.rows[1]);
-    let dataTable = this.props.dataTable
 
-    // console.log('dataTable  :', dataTable);
-    // console.log('dataTable.rows  :', dataTable.rows);
-
-    // console.log('typeod(rowdata)', typeof(rowdata))
-    // for (const key in rowdata) {
-    //   if (rowdata.hasOwnProperty(key)) {
-    //     const element = rowdata[key];
-    //     console.log('key :', key);
-
-    //   }
-    // }
+    console.log('Menu :', Menu);
     return (
 
       <Layout style={{ minHeight: '100vh' }}>
@@ -131,20 +96,23 @@ class MyLayout extends Component {
               {/* data-grid-layout */}
               <Card style={{ margin: '5px 0' }}>
                 {this.inputFile()}
-                {this.btnUpLoad(this.propsBtnUpLoad)}
+                {/* {this.btnUpLoad(this.propsBtnUpLoad)} */}
               </Card>
 
               <Card >
                 <div className="mystyle">
-                  {this.showReactDataGrid()}
+                  {/* {this.showReactDataGrid()} */}
+                  <GridTable/>
                 </div>
+                <Button type="primary" icon="delete" onClick={this.removeItemsSelected}>
+                Remove
+            </Button>
               </Card>
 
             </div>
           </Content>
         </Layout>
       </Layout>
-
     )
   }
 }

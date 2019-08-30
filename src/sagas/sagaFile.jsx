@@ -1,42 +1,37 @@
-import { put, take, takeEvery } from 'redux-saga/effects'
-import * as actions from './../actions';
-import * as constants from './../constants';
+import { put, takeEvery } from 'redux-saga/effects'
+import * as constants from '../constants';
 import XLSX from 'xlsx';
 
-export function* sagaGetDataFromFile(event) {
+
+export function* sagaGetDataFromFile(action) {
     // yield take(constants.LOAD_FILE)
-    console.log('sagaGetDataFromFile event :', event )
-    if (event)
+    console.log('sagaGetDataFromFile action :', action)
+   
         try {
-            console.log('getDataFromFile');
-            const data = yield getDataFromFile(event)
+            const data = yield getDataFromFile(action)
             console.log('data', data)
             yield put({ type: constants.IMPORT_FILE_SUCCESS, data })
         } catch (error) {
             throw error
         }
-
 }
 
-  export function* watchSagaGetDataFromFile() {
-    yield takeEvery('LOAD_FILE', sagaGetDataFromFile)
-  }
+export function* watchSagaGetDataFromFile() {
+    yield takeEvery(constants.LOAD_FILE, sagaGetDataFromFile)
+}
 
 
-  function* updatePorts(status) {
-    console.log(status)
-  }
-  
-  export function* watchUpdatePorts() {
-    yield takeEvery('MY_ACTION', updatePorts)
-  }
+// function* updatePorts(status) {
+//     console.log(status)
+// }
+
+// export function* watchUpdatePorts() {
+//     yield takeEvery('MY_ACTION', updatePorts)
+// }
 
 
-async function getDataFromFile(event) {
-
-    let file = event.file
-    console.log('file :', file);
-
+ function getDataFromFile(action) {
+    let file = action.file
     let reader = new FileReader();
     return new Promise((resolve, reject) => {
         reader.onload = event => {
@@ -56,15 +51,18 @@ async function getDataFromFile(event) {
                     key: element.toLowerCase(),
                     name: element,
                     resizable: true,
-
+                    editable :i===0?false:true,
+                    filterable: true,
                 }
                 dataTable.cols.push(cellHeading)
             }
+
             let objRow = {
-                id: '1',
-                title: 't',
+                id: '',
+                title: '',
                 count: 0
             }
+
             let objRowKey = []
             for (const key in objRow) {
                 if (objRow.hasOwnProperty(key)) {
@@ -84,8 +82,6 @@ async function getDataFromFile(event) {
 
 
             }
-            console.log('dataTable :', dataTable);
-            // console.log('dataTable.rows :', dataTable.rows[0]);
             resolve(dataTable)
         }
         reader.readAsArrayBuffer(file);
@@ -93,14 +89,3 @@ async function getDataFromFile(event) {
 
 
 }
-
-// let handleUpLoadFile = async (file) => {
-//     try {
-//         // return await getDataFromFile(reader, file)
-//         const data = await getDataFromFile(file)
-//         console.log('data await: ', data)
-//         return data
-//     } catch (e) {
-//         console.log(e.message)
-//     }
-// }
